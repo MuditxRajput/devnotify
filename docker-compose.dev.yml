@@ -1,0 +1,18 @@
+services:
+  notifydev-api:
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./notifydev-api/.env.local
+    volumes:
+      - ./notifydev-api:/app
+      - /app/node_modules
+
+  notifydev-web:
+    command: 'sh -c "npm install && npm run dev"'
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./notifydev-web:/app
+      - /app/node_modules

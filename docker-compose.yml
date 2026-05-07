@@ -1,0 +1,29 @@
+services:
+  notifydev-api:
+    build:
+      context: ./notifydev-api
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+  notifydev-web:
+    build:
+      context: ./notifydev-web
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - notifydev-api
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=notifydev
+      - POSTGRES_DB=notifydev
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+    postgres_data:

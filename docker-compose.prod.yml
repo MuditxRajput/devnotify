@@ -1,0 +1,12 @@
+services:
+  notifydev-api:
+    command: npm start
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./notifydev-api/.env
+
+  notifydev-web:
+    command: npm start
+    environment:
+      - NODE_ENV=production
