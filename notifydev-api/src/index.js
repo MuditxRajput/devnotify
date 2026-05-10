@@ -6,6 +6,7 @@ import cors from 'cors'
 import http from 'http'
 const app = express();
 import {Server} from 'socket.io'
+import submit_url_route from './routes/submit_url/route.js';
 app.use(express.json());
 app.use(cors());
 app.get('/check', (req, res) => {
@@ -25,4 +26,5 @@ io.engine.on('connection_error', (err) => {
     console.log('socket connection error:', err.message);
 });
 app.use('/v1/api/auth',authRouter);
+app.use('/v1/api/user_url',submit_url_route)
 checkDBConnection().then(() => server.listen((8000), console.log('Sever is runing'))).catch((err) => console.log(err))

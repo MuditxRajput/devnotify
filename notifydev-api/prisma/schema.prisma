@@ -15,9 +15,18 @@ model User {
   id Int @id @default(autoincrement())
   email String @unique
   password String
+  submit_url submit_url[]
+}
+model submit_url {
+  id Int @id @default(autoincrement())
+  url String 
+  checkInterval Int
+  UserId Int
+  user User @relation(fields:[UserId],references : [id])
   user_url_status user_url_status[]
 }
 enum url_status {
+  pending
   success
   timeout
   failed
@@ -25,7 +34,7 @@ enum url_status {
 model user_url_status {
   id Int @id @default(autoincrement())
   url_status url_status 
-  responseTime DateTime @db.Time
-  UserId Int 
-  user User @relation(fields: [UserId], references: [id])
+  responseTime Int 
+  submit_urlId Int
+  submit_url submit_url @relation(fields:[submit_urlId],references:[id])
 }
