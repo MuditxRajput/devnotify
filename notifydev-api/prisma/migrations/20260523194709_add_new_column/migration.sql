@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "url_status" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

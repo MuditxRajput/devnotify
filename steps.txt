@@ -1,0 +1,25 @@
+1. User can submit the single url or multiple url with montinoring timming for example 10 sec , 15 sec.
+2. Send the url with time in the object to server + save the job in the queue with abort controller to abort the api after user selected time.
+3. worker pick the job with specfic time and start try to hit the get request to the that api and if status is 200 save the status in the database and again get back that api to the queue for next api interval.
+4. if api status getting 500 just save the status in the database as failed untill 5 conscective failure , we make the coloum in the database failed_time , if the failed_time exceed 5 time it send the mail or text to the user to inform about the api is failed or timeout /ślow.
+
+Till now major part is complete i think.
+Now question arise how we show the data in the dashboard.
+
+1. As soon as user login we have to establish the persistence connect to the server.
+2. We can use the socket.io.
+3. Now suppose worker try to hit the api using GET request and get the timeout or status 500 request 5 times now as we save the info the database and as failed exceed 5 times we change the info in the redis that this user url is failed.
+4. But my question how we represent that info the dashboard.
+5. How we show the staus of all the user apis status in realtime.
+
+
+Redis cache (realtime)
+❌
+WebSocket dashboard
+❌
+5 consecutive fail + email
+❌
+Stop/remove monitor
+❌
+Dashboard API (latest status list)
+❌

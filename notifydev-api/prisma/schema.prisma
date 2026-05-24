@@ -15,26 +15,31 @@ model User {
   id Int @id @default(autoincrement())
   email String @unique
   password String
-  submit_url submit_url[]
+  url_table url_table[]
 }
-model submit_url {
+model url_table {
   id Int @id @default(autoincrement())
-  url String 
+  url String  
   checkInterval Int
   UserId Int
   user User @relation(fields:[UserId],references : [id])
-  user_url_status user_url_status[]
+  url_status url_status[]
+  consecutiveFailCount Int @default(0)
+  consecutiveSuccessCount Int @default(0)
+  downNotified Boolean @default(false)
+  @@unique([UserId,url])
 }
-enum url_status {
+enum status {
   pending
   success
   timeout
   failed
 }
-model user_url_status {
+model url_status {
   id Int @id @default(autoincrement())
-  url_status url_status 
+  status status 
   responseTime Int 
-  submit_urlId Int
-  submit_url submit_url @relation(fields:[submit_urlId],references:[id])
+  url_tableId Int
+  url_table url_table @relation(fields: [url_tableId], references: [id])
+  createdAt DateTime @default(now())
 }

@@ -9,4 +9,7 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["npm", "start"]
+# Default container process: API server.
+# Worker container should override command in docker-compose, e.g.:
+# command: ["node", "src/worker/worker.js"]
+CMD ["node", "src/index.js"]

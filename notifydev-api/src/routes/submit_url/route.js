@@ -1,7 +1,11 @@
 import express from 'express'
 import { authMiddleware } from '../../helper/middlewares/authMiddleware.js';
 import { prisma } from '../../db/db.js';
-import { url_status } from '@prisma/client';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { status: CheckStatus } = require('@prisma/client');
+import { addUrl } from '../../bullmq/queue.js';
 const submit_url_route = express.Router();
 
 submit_url_route.post('/url',authMiddleware,async(req,res)=>{
@@ -9,34 +13,42 @@ submit_url_route.post('/url',authMiddleware,async(req,res)=>{
     const id = req.id;
     if(!id) return res.status(401).json({msg : 'User not found',success:false});
     const {urls} =  req.body;
-  
     
-
-    await prisma.$transaction(async(tx)=>{
+    const dbSavedUrl = await prisma.$transaction(async(tx)=>{
        const savedUrlPromoise = urls?.map(async(item)=>{
-       return await tx.submit_url.create({
-          data : {
-            url : item.url,
-            checkInterval : item.checkInterval,
-            UserId : id
-          }
+       return await tx.url_table.upsert({
+          where: {
+            UserId_url: { UserId: id, url: item.url },
+          },
+          create: {
+            url: item.url,
+            checkInterval: item.checkInterval,
+            UserId: id,
+          },
+          update: {
+            checkInterval: item.checkInterval,
+          },
         })
       })
       const saved_url = await Promise.all(savedUrlPromoise);
       // saved in the status table 
       await Promise.all(saved_url?.map(async(item)=>{
-        await tx.user_url_status.create({
+        await tx.url_status.create({
           data: {
-            url_status : url_status.pending,
+            status : CheckStatus.pending,
             responseTime : 0,
-            submit_urlId : item.id,
+            url_tableId : item.id,
           }
         })
       }))
-      // tx.user_url_status.create
+      return saved_url;
+    });
+    const { msg, success } = await addUrl(dbSavedUrl, id);
+    if (!success) {
+      return res.status(500).json({ msg, success: false });
+    }
 
-    })
-    return res.status(201).json({msg:'Url submit successfully',success:true});
+    return res.status(201).json({ msg: 'Url submit successfully', success: true });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({msg:error.message,success:false});

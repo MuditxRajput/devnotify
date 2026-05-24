@@ -1,6 +1,6 @@
 services:
   notifydev-api:
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npx prisma generate && npx prisma migrate deploy && npm run dev"
     environment:
       - NODE_ENV=development
     env_file:
@@ -15,4 +15,12 @@ services:
       - NODE_ENV=development
     volumes:
       - ./notifydev-web:/app
+      - /app/node_modules
+
+  worker:
+    command: sh -c "npm install && npx prisma generate && npx nodemon --watch src/worker src/worker/worker.js"
+    env_file:
+      - ./notifydev-api/.env.local
+    volumes:
+      - ./notifydev-api:/app
       - /app/node_modules
