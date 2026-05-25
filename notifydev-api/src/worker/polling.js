@@ -62,7 +62,7 @@ export const urlCall = async (job) => {
         checkedAt : Date.now(),
         urlTableId : job.data.id,
     };
-    await redisClient.set(REDIS_KEY,JSON.stringify(redisObj));
+    await redisClient.set(REDIS_KEY,JSON.stringify(redisObj),{EX: job.data.checkInterval *3});
     const userInfo = await prisma.user.findUnique({
         where : {
             id : dataAfterResponse.UserId
@@ -129,7 +129,7 @@ export const urlCall = async (job) => {
         checkedAt : Date.now(),
         urlTableId : job.data.id,
     }
-   await redisClient.set(REDIS_KEY,JSON.stringify(redisObj));
+   await redisClient.set(REDIS_KEY,JSON.stringify(redisObj),{EX : job.data.checkInterval * 3});
    const userInfo = await prisma.user.findUnique({
     where : {
         id : failedcount.UserId,
