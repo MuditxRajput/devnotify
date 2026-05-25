@@ -8,6 +8,7 @@ const app = express();
 import {Server} from 'socket.io'
 import submit_url_route from './routes/submit_url/route.js';
 import flakyRouter from './routes/test/flaky.js';
+import dashboardApi from './routes/dashboard-api/route.js';
 app.use(express.json());
 app.use(cors());
 app.get('/check', (req, res) => {
@@ -28,6 +29,7 @@ io.engine.on('connection_error', (err) => {
 });
 app.use('/v1/api/auth',authRouter);
 app.use('/v1/api/user_url',submit_url_route);
+app.use('/v1/api/dashboard',dashboardApi)
 if (process.env.NODE_ENV !== 'production') {
   app.use('/v1/api/test', flakyRouter);
 }
